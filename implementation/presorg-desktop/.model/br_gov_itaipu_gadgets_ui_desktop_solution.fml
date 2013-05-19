@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<model xmlns="http://ns.adobe.com/Fiber/1.0">
+  <annotation name="ActionScriptGeneration">
+    <item name="FullyQualifyReferences">true</item>
+  </annotation>
+  <service name="JCSMensagem">
+    <annotation name="ActionScriptGeneration">
+      <item name="WSDL-service">JCSMensagem</item>
+      <item name="ServiceType">WebService</item>
+      <item name="WSDL">http://localhost:7001/POSTITWeb/JCSMensagem.jws?WSDL</item>
+      <item name="Package">br.gov.itaipu.gadgets.business.service</item>
+      <item name="WSDL-port">JCSMensagemSoap</item>
+    </annotation>
+    <annotation name="ServiceTypeGroup">
+      <item name="ServiceBackendType">WebService</item>
+    </annotation>
+    <annotation name="WSDLCollectionElementTypes">
+      <item name="http://www.openuri.org/,ArrayOfMensagemVO">MensagemVO::http://www.openuri.org/,MensagemVO</item>
+    </annotation>
+    <annotation name="ServiceConfig">
+      <item name="DEFAULT_ENTITY_PACKAGE">br.gov.itaipu.gadgets.entity.postit</item>
+      <item name="WSDL-endpoint">http://digows-pc:7001/POSTITWeb/JCSMensagem.jws</item>
+      <item name="LINKED_FILE"></item>
+    </annotation>
+    <function name="obterMensagensNaoExpiradasPorRevisao" arguments="revisao:integer" return-type="MensagemVO[]">
+      <annotation name="analyze group">
+        <item name="analyzed">true</item>
+      </annotation>
+      <annotation name="WSDLName">
+        <item name="SOAPAction">http://www.openuri.org/obterMensagensNaoExpiradasPorRevisao</item>
+        <item name="obterMensagensNaoExpiradasPorRevisao">http://www.openuri.org/,obterMensagensNaoExpiradasPorRevisao</item>
+      </annotation>
+      <annotation name="original signature">
+        <item name="inputParams">integer</item>
+        <item name="returnType">MensagemVO</item>
+      </annotation>
+    </function>
+  </service>
+  <entity name="MensagemVO">
+    <annotation name="EntityProperties">
+      <item name="EntityOriginalName">MensagemVO</item>
+    </annotation>
+    <annotation name="service Group">
+      <item name="service">JCSMensagem,JCSMensagemDummy</item>
+    </annotation>
+    <annotation name="ServerProperties">
+      <item name="IncludeRemoteClass">nonempty</item>
+    </annotation>
+    <annotation name="ActionScriptGeneration">
+      <item name="Package">br.gov.itaipu.gadgets.entity.postit</item>
+    </annotation>
+    <property name="Cd_mensagem" type="long" required="true"/>
+    <property name="Nu_revisao" type="integer" required="true"/>
+    <property name="Titulo_pt" type="string" required="true"/>
+    <property name="Titulo_es" type="string" required="true"/>
+    <property name="Ds_mensagem_pt" type="string" required="true"/>
+    <property name="Ds_mensagem_es" type="string" required="true"/>
+    <property name="Dt_criacao" type="date" required="true"/>
+    <property name="Dt_atualizacao" type="date" required="true"/>
+    <property name="Dt_expiracao" type="date" required="true"/>
+    <property name="Nivel" type="string" required="true"/>
+    <property name="Marcador" type="string" required="true"/>
+    <property name="Status" type="string" required="true"/>
+    <property name="Remetente" type="string" required="true"/>
+    <property name="nu_revisao" type="integer" required="true"/>
+  </entity>
+</model>

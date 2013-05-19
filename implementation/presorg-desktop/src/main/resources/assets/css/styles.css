@@ -1,0 +1,22 @@
+/* CSS file */
+@namespace s "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+@namespace spark "spark.skins.spark.*";
+
+global
+{
+	font-family: Verdana, Tahoma, Arial;
+	font-anti-alias-type: advanced;
+}
+
+s|Label.link
+{
+	font-size: 12;
+	color: blue;
+	text-decoration: underline;
+}
+
+s|Label
+{
+	font-size: 12;
+}

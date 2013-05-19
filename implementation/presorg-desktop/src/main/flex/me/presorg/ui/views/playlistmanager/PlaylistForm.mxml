@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:VGroup xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	xmlns:playlist="me.presorg.entity.playlist.*"
+	currentState="{playlistController.currentState}">
+
+	<s:states>
+		<s:State name="list"/>
+		<s:State name="insert"/>
+		<s:State name="update"/>
+	</s:states>
+	
+	<mx:Form width="100%" height="100%" defaultButton="{btSave}">
+		<mx:FormHeading label="Playlist Information"/>
+		
+		<mx:FormItem label="Author:" required="true" 
+			direction="horizontal" width="100%">
+			<s:DropDownList id="inputAuthors" labelField="name"
+				selectedIndex="{inputAuthorsSelectedIndex}" width="100%"
+				dataProvider="{authorController.authors}"/>
+			
+			<mx:Image source="@Embed('/assets/img/add.png')" height="100%" 
+				buttonMode="true"
+				verticalAlign="middle" horizontalAlign="center"
+				click="authorController.changeToAdd()"/>
+			
+			<mx:Image source="@Embed('/assets/img/edit.png')" height="100%" 
+				buttonMode="true" visible="{inputAuthors.selectedItem}" 
+				verticalAlign="middle" horizontalAlign="center"
+				click="authorController.changeToUpdate( inputAuthors.selectedItem )"/>
+			
+			<mx:Image source="@Embed('/assets/img/remove.png')" height="100%" 
+				buttonMode="true" visible="{inputAuthors.selectedItem}" 
+				verticalAlign="middle" horizontalAlign="center"
+				click="authorController.removeAuthor( inputAuthors.selectedItem )"/>
+		</mx:FormItem>
+		
+		<mx:FormItem label="Musics" direction="horizontal" width="100%"/>
+		
+		<mx:DataGrid id="inputMusics" dataProvider="{playlist.musics}"
+			width="100%" height="100%"
+			allowDragSelection="true" allowMultipleSelection="true" 
+			dropEnabled="true" dragEnabled="true" dragMoveEnabled="true">
+			<mx:columns>
+				<mx:DataGridColumn headerText="Title" dataField="title"/>
+				<mx:DataGridColumn headerText="Category" dataField="category" textAlign="center" width="85"/>
+				<mx:DataGridColumn id="controlsColumn" headerText="" textAlign="center" width="65" visible="false"
+					itemRenderer="me.presorg.ui.views.playlistmanager.renderers.MusicControlsRenderer"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<s:HGroup width="100%" horizontalAlign="right" verticalAlign="middle">
+			<s:Label styleName="link" width="100%" buttonMode="true"
+				text="Generate PPS File" includeIn="update"
+				click="playlistController.generatePPSFile( playlist )"/>
+			
+			<s:ToggleButton id="btEdit" label="{btEdit.selected ? 'Done' : 'Edit'}" 
+				click="controlsColumn.visible = !controlsColumn.visible"/>			
+		</s:HGroup>
+		
+	</mx:Form>
+	
+	<s:HGroup horizontalAlign="right" width="100%">
+		<s:Button id="btSave" label="Save" 
+			click.insert="validate() ? playlistController.insertPlaylist( playlist ) : null"
+			click.update="validate() ? playlistController.updatePlaylist( playlist ) : null"/>
+		<s:Button label="Cancel"
+			click="playlistController.changeToList()"/>
+	</s:HGroup>
+	
+	<fx:Declarations>
+		<!-- Entity -->
+		<playlist:Playlist id="playlist"
+			author="{inputAuthors.selectedItem}"/>
+		
+		<!-- Validators -->
+		<fx:Array id="validators">
+			<mx:Validator source="{inputAuthors}" property="selectedItem"/>
+			<mx:Validator source="{inputMusics}" property="dataProvider"/>
+		</fx:Array>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import me.presorg.controller.AuthorController;
+			import me.presorg.controller.PlaylistController;
+			import me.presorg.entity.music.Music;
+			import me.presorg.entity.playlist.Author;
+			
+			import mx.events.DragEvent;
+			import mx.validators.Validator;
+			
+			/*-------------------------------------------------------------------
+			* 		 					ATTRIBUTES
+			*-------------------------------------------------------------------*/
+			[Inject]
+			[Bindable]
+			public var playlistController:PlaylistController;
+			[Inject]
+			[Bindable]
+			public var authorController:AuthorController;
+			
+			/*-------------------------------------------------------------------
+			* 		 					HANDLERS
+			*-------------------------------------------------------------------*/
+			[EventHandler(event="PresorgEvent.playlist_CHANGE_ENTITY", properties="data")]
+			public function playlistChangeEntityHandler( data:Playlist ):void
+			{
+				this.playlist = data;
+				dispatchEvent( new Event("entityChanged") );
+			}
+			
+			[EventHandler(event="PresorgEvent.AUTHOR_ADDED", properties="data")]
+			public function authorAddedHandler( data:Author ):void
+			{
+				this.inputAuthors.selectedItem = data;
+			}
+			
+			[EventHandler(event="PresorgEvent.playlist_REMOVE_MUSIC", properties="data")]
+			public function removeMusicHandler( data:Music ):void
+			{
+				this.playlistController.removeMusicFromPlaylist( playlist, data );
+			}
+			
+			[EventHandler(event="PresorgEvent.playlist_MOVE_MUSIC_UP", properties="data")]
+			public function moveMusicUpHandler( data:Music ):void
+			{
+				this.playlistController.moveMusicToUp( playlist, data );
+			}
+			
+			[EventHandler(event="PresorgEvent.playlist_MOVE_MUSIC_DOWN", properties="data")]
+			public function moveMusicDownHandler( data:Music ):void
+			{
+				this.playlistController.moveMusicToDown( playlist, data );
+			}
+			
+			/*-------------------------------------------------------------------
+			* 		 					BEHAVIORS
+			*-------------------------------------------------------------------*/
+			private function validate():Boolean
+			{
+				return Validator.validateAll( validators ).length == 0;
+			}
+			
+			/*-------------------------------------------------------------------
+			* 		 				GETTERS AND SETTERS
+			*-------------------------------------------------------------------*/
+			[Bindable("entityChanged")]
+			private function get inputAuthorsSelectedIndex():int
+			{
+				for each ( var author:Author in authorController.authors )
+				{
+					if ( author.idLocal == playlist.author.idLocal )
+					{
+						return authorController.authors.getItemIndex( author );
+					}
+				}
+				
+				return -1;
+			}
+
+		]]>
+	</fx:Script>
+	
+</s:VGroup>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	xmlns:swiz="http://swiz.swizframework.org"
+	xmlns:logging="com.adobe.air.logging.*"
+	xmlns:ui="me.presorg.ui.*"
+	width="800" height="600"
+	showStatusBar="false" backgroundAlpha="0.0"
+	creationCompleteEffect="Fade">
+
+	<ui:PresorgBoard/>
+	
+	<fx:Style source="/assets/css/styles.css"/>
+	
+	<fx:Metadata>
+		[ResourceBundle("Presorg")]
+	</fx:Metadata>
+	
+	<fx:Declarations>
+		<!-- Log Config -->
+		<s:TraceTarget id="traceTarget"
+			includeDate="false" includeTime="false" 
+			includeCategory="true" includeLevel="true"
+			filters="{logFilters}" level="{LogEventLevel.ALL}">
+		</s:TraceTarget>
+		
+		<logging:FileTarget id="fileTarget"
+			includeDate="true" includeTime="true" 
+			includeCategory="true" includeLevel="true"
+			filters="{logFilters}" level="{LogEventLevel.ERROR}">
+		</logging:FileTarget>
+		
+		<fx:Array id="logFilters">
+			<fx:String>com.apolloti.presorg.*</fx:String>
+		</fx:Array>
+		
+		<!-- Swiz Config -->
+		<swiz:Swiz beanProviders="{PresorgController.beanProviders}">
+			<swiz:config>
+				<swiz:SwizConfig
+					eventPackages="com.apolloti.presorg.event.*" 
+					viewPackages="com.apolloti.presorg.ui.*"
+					defaultFaultHandler="PresorgController.defaultFaultHandler"/>
+			</swiz:config>
+		</swiz:Swiz>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import me.presorg.controller.PresorgController;
+			
+			import mx.logging.LogEventLevel;
+			
+			/*-------------------------------------------------------------------
+			* 		 					ATTRIBUTES
+			*-------------------------------------------------------------------*/
+			[Inject]
+			public var presorgController:PresorgController;
+			
+			/*-------------------------------------------------------------------
+			* 		 					 HANDLERS
+			*-------------------------------------------------------------------*/
+			
+			/*-------------------------------------------------------------------
+			* 		 					BEHAVIORS
+			*-------------------------------------------------------------------*/
+			[PostConstruct]
+			public function postConstruct():void
+			{
+				this.presorgController.initialize();
+			}
+
+		]]>
+	</fx:Script>
+	
+</s:WindowedApplication>

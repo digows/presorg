@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	xmlns:music="me.presorg.entity.music.*"
+	xmlns:textlayouteditor="me.presorg.ui.controls.textlayouteditor.*"
+	width="600" height="570"
+	close="close()">
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	
+	<textlayouteditor:TextLayoutEditor width="100%" height="100%"
+		textFlow="@{music.lyric}"/>
+	
+	<s:controlBarLayout>
+		<s:HorizontalLayout horizontalAlign="right"/>
+	</s:controlBarLayout>
+	
+	<s:controlBarContent>
+		<s:Button label="Save" 
+			click="musicManagerController.updateMusic( music ); close()"/>
+		<s:Button label="Cancel" click="close()"/>
+	</s:controlBarContent>
+	
+	<fx:Declarations>
+		<music:Music id="music"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import me.presorg.controller.MusicController;
+			
+			import mx.managers.PopUpManager;
+			
+			/*-------------------------------------------------------------------
+			* 		 					ATTRIBUTES
+			*-------------------------------------------------------------------*/
+			[Inject]
+			[Bindable]
+			public var musicManagerController:MusicController;
+			
+			private function close():void
+			{
+				PopUpManager.removePopUp( this );
+			}
+		]]>
+	</fx:Script>
+</s:TitleWindow>
