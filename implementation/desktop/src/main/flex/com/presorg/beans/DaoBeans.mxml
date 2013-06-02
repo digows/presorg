@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/**
+* @author Rodrigo P. Fraga (rodrigo@apollo-ti.com)
+* @since 12/02/2011
+* @version 1.0
+* @category BeanProvider
+*/
+-->
+<swiz:BeanProvider xmlns:swiz="http://swiz.swizframework.org" 
+	xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:mx="library://ns.adobe.com/flex/mx" 
+	xmlns:flexorm="nz.co.codec.flexorm.*" 
+	xmlns:storage="org.swizframework.storage.*" 
+	xmlns:music="com.presorg.business.dao.music.*" 
+	xmlns:playlist="com.presorg.business.dao.playlist.*">
+	
+	<fx:Declarations>
+		<!-- Shared Object -->
+		<storage:SharedObjectBean id="presorgSharedObject" 
+			name="PresorgShareObject"/>
+		
+		<!-- DAOs -->
+		<music:MusicDao id="musicDao"/>
+		<music:AudioDao id="audioDao"/>
+		<music:VideoDao id="videoDao"/>
+		
+		<playlist:AuthorDao id="authorDao"/>
+		<playlist:PlaylistDao id="playlistDao"/>
+		
+		
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import nz.co.codec.flexorm.EntityManager;
+			
+			import org.swizframework.core.BeanFactory;
+			
+			/*-------------------------------------------------------------------
+			* 		 					 BEHAVIORS
+			*-------------------------------------------------------------------*/
+			override public function initialize( domain:ApplicationDomain ):void
+			{
+				super.initialize( domain );
+				
+				super.addBean( BeanFactory.constructBean( entityManager, "entityManager", domain) );
+				super.addBean( BeanFactory.constructBean( connection, "connection", domain) );
+			}
+			
+			/*-------------------------------------------------------------------
+			* 		 					 GETTERS AND SETTERS
+			*-------------------------------------------------------------------*/
+			public function get entityManager():EntityManager
+			{
+				var em:EntityManager = EntityManager.instance;
+				em.sqlConnection = connection;
+				em.debugLevel = 0;
+				return em;
+			}
+			
+			public function get connection():SQLConnection
+			{
+				var sqlConnection:SQLConnection = new SQLConnection();
+				sqlConnection.open( File.applicationStorageDirectory.resolvePath("PresorgDatabase.db") );
+				return sqlConnection;
+			}
+		]]>
+	</fx:Script>
+	
+</swiz:BeanProvider>
