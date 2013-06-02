@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:data="http://www.springframework.org/schema/data/jpa"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+	default-autowire="byName">
+	
+	<!-- Config files -->
+	<context:property-placeholder ignore-unresolvable="false"
+		location="classpath:presorg.properties, classpath:presorg-persistence.properties" />
+	
+	<!-- ========================== DATA SOURCE ============================= -->
+	<jdbc:embedded-database id="dataSource" type="H2"/>
+	
+	<!-- ============================== JPA CONFIG ================================  -->
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+	    p:dataSource-ref="dataSource">
+	   	<property name="loadTimeWeaver">
+            <bean class="org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver" />
+        </property>
+        <property name="persistenceProviderClass" value="org.hibernate.ejb.HibernatePersistence"/>
+        <property name="persistenceUnitName" value="${jpa.persistenceUnitName}"/>
+		<property name="packagesToScan" value="com.presorg.domain.entity"/>
+		<property name="jpaVendorAdapter">
+			<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"
+				p:databasePlatform="${jpa.databasePlatform}"/>
+		</property>
+		<property name="jpaProperties">
+      		<props>
+      			<!-- General -->
+      			<prop key="hibernate.hbm2ddl.auto">${jpa.generateDdl}</prop>
+      			<prop key="hibernate.format_sql">false</prop>
+      			<prop key="hibernate.show_sql">${jpa.showSql}</prop>
+				
+				<!-- Cache -->
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory</prop>
+				<!-- <property name="hibernate.cache.provider_configuration" value="/ehcache.xml" /> -->
+	  			<prop key="hibernate.cache.use_second_level_cache">true</prop>
+	  			<prop key="hibernate.cache.use_query_cache">true</prop>
+      		</props>
+    	</property>
+	</bean>
+	<bean id="entityManager" class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+   	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+     	<property name="entityManagerFactory" ref="entityManagerFactory" />
+   	</bean>
+	<bean id="persistenceAnnotationBeanPostProcessor" 
+		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+		
+	<!-- ============================== AOP DEFINITIONS ================================ -->
+	<!--
+		Instruct Spring to perform declarative transaction management
+		automatically on annotated classes.
+	-->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" mode="aspectj"/>
+	
+	<!-- Aspect Beans --> 
+	<aop:aspectj-autoproxy proxy-target-class="true"/>
+	<!--
+	<context:component-scan
+    	base-package="com.presorg.application.aspect"
+        use-default-filters="true">
+        <context:include-filter type="annotation"
+        	expression="org.aspectj.lang.annotation.Aspect" />
+	</context:component-scan>
+	-->
+	
+	<!-- ========================= BUSINESS OBJECT DEFINITIONS ========================= -->
+	<!--
+		Activates various annotations to be detected in bean classes: Spring's
+		@Required and @Autowired, as well as JSR 250's @PostConstruct,
+		@PreDestroy and @Resouce (if available) and JPA's @PersistenceContext
+		and @PersistenceUnit (if available).
+	-->
+	<context:annotation-config />
+	
+	<!-- 
+		Application Layer 
+	-->
+	<!-- Password Encoder -->
+	<bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder" />
+	<bean id="saltSource" class="org.springframework.security.authentication.dao.SystemWideSaltSource">
+		<property name="systemWideSalt" value="${security.blowfish}"/>
+	</bean>
+	
+	<!-- Authenticator Manager -->
+	<security:authentication-manager alias="authenticationManager">
+		<security:authentication-provider user-service-ref="accountService" >
+			<security:password-encoder ref="passwordEncoder">
+				<security:salt-source ref="saltSource"/>
+			</security:password-encoder>
+		</security:authentication-provider>
+	</security:authentication-manager>
+	
+	<bean id="validator" 
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>	
+	<!-- 
+		Domain Layer 
+	-->	
+	<!-- Service Beans -->
+	<context:component-scan
+		base-package="com.presorg.domain.service" />
+		
+	<!-- 
+		Infrastructure Layer 
+	-->
+	<bean id="bootstrap" 
+		class="com.presorg.infrastructure.system.Bootstrap"/>
+		
+	<!-- Repository Beans --> 
+	<data:repositories factory-class="com.presorg.infrastructure.repository.JPA2DataRepositoryFactoryBean"
+		base-package="com.presorg.domain.repository" />
+	
+</beans>

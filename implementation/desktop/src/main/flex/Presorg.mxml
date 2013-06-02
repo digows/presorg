@@ -4,7 +4,7 @@
 	xmlns:mx="library://ns.adobe.com/flex/mx"
 	xmlns:swiz="http://swiz.swizframework.org"
 	xmlns:logging="com.adobe.air.logging.*"
-	xmlns:ui="me.presorg.ui.*"
+	xmlns:ui="com.presorg.ui.*"
 	width="800" height="600"
 	showStatusBar="false" backgroundAlpha="0.0"
 	creationCompleteEffect="Fade">
@@ -48,7 +48,7 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import me.presorg.controller.PresorgController;
+			import com.presorg.controller.PresorgController;
 			
 			import mx.logging.LogEventLevel;
 			

@@ -5,7 +5,7 @@
 	<groupId>com.presorg</groupId>
 	<artifactId>presorg-solution</artifactId>
 	<name>Presorg::solution</name>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	<version>1.0.0-RELEASE</version>
 	
 	<!-- Properties -->
@@ -30,6 +30,8 @@
 		<!-- Others -->
 		<aspectj.version>1.7.1</aspectj.version>
 		<junit.version>4.10</junit.version>
+		<jetty.version>9.0.3.v20130506</jetty.version>
+		<granite.version>3.0.0.M2</granite.version>
 		<!-- Default Environment -->
 		<env>development</env>
 	</properties>
@@ -132,6 +134,11 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>${springframework.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.springframework</groupId>
+    		<artifactId>spring-webmvc</artifactId>
+    		<version>${springframework.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -287,6 +294,40 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
+		
+		<!-- GraniteDS -->
+		<dependency>
+			<groupId>org.graniteds</groupId>
+			<artifactId>granite-core</artifactId>
+			<version>${granite.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.graniteds</groupId>
+			<artifactId>granite-spring</artifactId>
+			<version>${granite.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.graniteds</groupId>
+			<artifactId>granite-hibernate4</artifactId>
+			<version>${granite.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.graniteds</groupId>
+			<artifactId>granite-beanvalidation</artifactId>
+			<version>${granite.version}</version>
+		</dependency>
+		
+    	<!-- Jetty -->
+    	<dependency>
+      		<groupId>org.eclipse.jetty</groupId>
+      		<artifactId>jetty-server</artifactId>
+      		<version>${jetty.version}</version>
+    	</dependency>
+    	<dependency>
+      		<groupId>org.eclipse.jetty</groupId>
+      		<artifactId>jetty-webapp</artifactId>
+      		<version>${jetty.version}</version>
+    	</dependency>
 		
 		<!-- Logs -->
 		<dependency>
