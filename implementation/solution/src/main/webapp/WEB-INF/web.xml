@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+
+	<display-name>Presorg Solution</display-name>
+
+	<!-- Enable escaping of form submission contents and prevent XSS attacks -->
+    <context-param>
+        <param-name>defaultHtmlEscape</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
+	<!-- SpringFramework-->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/spring/presorg-context.xml
+		</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+
+	<!-- SpringSecurity 
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	-->  
+
+	<!-- OpenSessionInView -->
+	<filter>
+		<filter-name>OpenSessionInViewFilter</filter-name>
+		<filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>OpenSessionInViewFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<!-- Handles all other requests into the application 
+	<servlet>
+		<servlet-name>SpringMVCDispatcherServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/presorg-mvc-servlet-context.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpringMVCDispatcherServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	--> 
+	
+	<!-- GraniteDS -->
+	<!-- Read services-config.xml file at web application startup -->
+    <listener>
+        <listener-class>org.granite.config.GraniteConfigListener</listener-class>
+    </listener>
+    <!-- Handle AMF requests ([de]serialization) -->
+    <filter>
+        <filter-name>AMFMessageFilter</filter-name>
+        <filter-class>org.granite.messaging.webapp.AMFMessageFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AMFMessageFilter</filter-name>
+        <url-pattern>/graniteamf/*</url-pattern>
+    </filter-mapping>
+    <!-- Handle AMF requests (execution) -->
+    <servlet>
+        <servlet-name>AMFMessageServlet</servlet-name>
+        <servlet-class>org.granite.messaging.webapp.AMFMessageServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AMFMessageServlet</servlet-name>
+        <url-pattern>/graniteamf/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>
